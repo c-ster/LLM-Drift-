@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+python-dotenv
+sentence-transformers
+openai
+anthropic
+mistralai
+google-generativeai
+groq
+deepseek
+apscheduler

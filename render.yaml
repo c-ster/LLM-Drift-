@@ -1,0 +1,37 @@
+services:
+  # Backend Service (FastAPI)
+  - type: web
+    name: llm-drift-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && python init_db.py"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port 8000"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9
+      - key: DATABASE_URL
+        value: "sqlite:////var/data/sqlite/llm_responses.db"
+    disks:
+      - name: sqlite-data
+        mountPath: /var/data/sqlite
+        sizeGB: 1
+        autoCommit: false
+
+  # Frontend Service (Next.js)
+  - type: web
+    name: llm-drift-frontend
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm start"
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: llm-drift-backend
+          property: url
